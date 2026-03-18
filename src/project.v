@@ -17,11 +17,24 @@ module tt_um_example (
 );
 
   // All output pins must be assigned. If not used, assign to 0.
-  assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
   assign uio_out = 0;
   assign uio_oe  = 0;
 
+  wire [7:0] step;
+  reg  [7:0] cnt_r;
+
+  assign step = ~ui_in[0] ? 8'd0 :  // stay
+                 ui_in[1] ? 8'd1 :  // +1
+                              '1;   // -1
+                             
+  assign uo_out = cnt_r;
+
+  always @(posedge clk) begin
+    if (~rst_n) cnt_r <= 'b0;
+    else        cnt_r <= cnt_r + step;
+  end
+
   // List all unused inputs to prevent warnings
-  wire _unused = &{ena, clk, rst_n, 1'b0};
+  wire _unused = &{ena, 1'b0};
 
 endmodule
